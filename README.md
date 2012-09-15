@@ -25,5 +25,5 @@ memory usage
 
 Space to store all primes up to N: O(N)
 
-The class uses 1/2 bit for each number stored because it ignores even integers.
+The class uses 1/2 bit for each number stored because we can ignore even integers.
 

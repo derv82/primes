@@ -31,8 +31,9 @@ public class Primes {
 	 * We know even numbers will not be prime (excluding 2).
 	 *
 	 * Example:
-	 * First elemnt's 7 (LSBs): ...  0    1    1    0   1   1   1
-	 * These bits translate to: ... [15] [13] [11] [9] [7] [5] [3]
+	 * First element's 7 (LSBs): ...  1   1   1   0   1    1    0
+	 * These bits translate to:  ... [3] [5] [7] [9] [11] [13] [15]
+	 * 1 indicates number is prime, 0 means number is not prime.
 	 * We can easily check if a number is a prime by ANDing with the appropriate bit.
 	 */
 	private int[] oddBitmap;
@@ -140,7 +141,7 @@ public class Primes {
 
 	/** Displays bitmap. */
 	public void printBitmap() {
-		// Highest row that may contain 1 bits.
+		// Highest row that may contain at least 1 bit.
 		int maxRow = (((currentPrime - 1) / 2) / 32);
 		System.out.print("Bitmap of odd primes (starting at 3):\n\t");
 		// Iterate over every row in bitmap (except non-calculated rows)
