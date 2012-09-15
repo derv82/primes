@@ -10,7 +10,7 @@ public class Main {
 	/** Show how to initialize Primes class. */
 	public static void showInitPrimes() {
 		// Initialize to contain all primes up to 64
-		Primes primes = new Primes(64);
+		Primes primes = new Primes(128);
 		primes.printBitmap();
 	}
 
@@ -22,7 +22,7 @@ public class Main {
 		
 		// Print the first 24 primes
 		for (int i = 0; i < 24; i++) {
-			System.out.println(primes.nextPrime());
+			System.out.println("Next prime: " + primes.nextPrime());
 		}
 		
 		primes.printBitmap(); // Bitmap of first 24 primes

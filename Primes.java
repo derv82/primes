@@ -106,11 +106,50 @@ public class Primes {
 		if (n < 2)      return false;
 		if (n == 2)     return true;
 		if (n % 2 == 0) return false;
-		int maxFactor = n / 2; // Highest possible factor of n.
+		int maxFactor = (int) Math.sqrt(n); // Highest unique factor of n
 		// Only check odd factors.
-		for (int i = 3; i < maxFactor; i += 2) {
+		for (int i = 3; i <= maxFactor; i += 2) {
 			// If is a factor, then n is not prime.
 			if (n % i == 0) return false;
+		}
+		return true;
+	}
+
+	/** Array of all single bit masks. */
+	public static final int[] BIT_MASKS = {
+		2 ^ 0,  2 ^ 1,  2 ^ 2,  2 ^ 3,  2 ^ 4, 
+		2 ^ 5,  2 ^ 6,  2 ^ 7,  2 ^ 8,  2 ^ 9, 
+		2 ^ 10, 2 ^ 11, 2 ^ 12, 2 ^ 13, 2 ^ 14, 
+		2 ^ 15, 2 ^ 16, 2 ^ 17, 2 ^ 18, 2 ^ 19, 
+		2 ^ 20, 2 ^ 21, 2 ^ 22, 2 ^ 23, 2 ^ 24, 
+		2 ^ 25, 2 ^ 26, 2 ^ 27, 2 ^ 28, 2 ^ 29,
+		2 ^ 30, 2 ^ 31 };
+	
+	/** 
+	 * Performs the O(n) computation to see if a number is prime.
+	 * Only checks if primes are factors, ignores non-prime factors.
+	 * @param n The number to check if prime or not.
+	 * @return True if n is prime, false otherwise.
+	 */
+	private boolean newcalculatePrime(int n) {
+		// Ignore multiples of 2 (except 2).
+		if (n < 2)      return false;
+		if (n == 2)     return true;
+		if (n % 2 == 0) return false;
+		int maxFactor = (int) Math.sqrt(n); // Highest possible factor of n.
+		int current = 1, currentRow = 0, currentCol = 0;
+		// Only check odd factors.
+		while (current <= maxFactor) {
+			current += 2;
+			if (currentCol >= INT_SIZE) {
+				currentRow++;
+				currentCol = 0;
+			}
+			if ( (oddBitmap[currentRow] & BIT_MASKS[currentCol]) == 0) {
+				currentCol++;
+				continue;
+			}
+			if (n % current == 0) return false;
 		}
 		return true;
 	}
@@ -143,7 +182,7 @@ public class Primes {
 	public void printBitmap() {
 		// Highest row that may contain at least 1 bit.
 		int maxRow = (((currentPrime - 1) / 2) / 32);
-		System.out.print("Bitmap of odd primes (starting at 3):\n\t");
+		System.out.print("Bitmap of odd primes (from 3 to " + (currentPrime - 2) + "):\n\t");
 		// Iterate over every row in bitmap (except non-calculated rows)
 		for (int row = 0; row < oddBitmap.length && row <= maxRow; row++) {
 			int temp = 1; // Will be shifted to check for bits in bitmap
