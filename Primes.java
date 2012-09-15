@@ -10,6 +10,8 @@
  *  - 1/2 bit for each digit
  *  - Example: Memory to store all primes up to the number 64 costs 32 bits (1 int)
  * 
+ * TODO Convert all ints to longs, overload methods to receive ints.
+ * 
  * @author derv
  */
 public class Primes {
@@ -78,7 +80,7 @@ public class Primes {
 	 * @param prime True if n is prime, false otherwise.
 	 */
 	private void addNumber(int n, boolean prime) {
-		int oddIndex = (n - 3) / 2; // We want '3' to be the first bit
+		int oddIndex = (n - 3) / 2; // '3' is the first bit, ignore evens.
 		int row = oddIndex / 32;
 		int col = oddIndex % 32;
 		if (row >= oddBitmap.length) {
@@ -127,7 +129,7 @@ public class Primes {
 	
 	/** 
 	 * Performs the O(n) computation to see if a number is prime.
-	 * Only checks if primes are factors, ignores non-prime factors.
+	 * Only checks prime factors, ignores non-prime factors.
 	 * @param n The number to check if prime or not.
 	 * @return True if n is prime, false otherwise.
 	 */
@@ -138,7 +140,6 @@ public class Primes {
 		if (n % 2 == 0) return false;
 		int maxFactor = (int) Math.sqrt(n); // Highest possible factor of n.
 		int current = 1, currentRow = 0, currentCol = 0;
-		// Only check odd factors.
 		while (current <= maxFactor) {
 			current += 2;
 			if (currentCol >= INT_SIZE) {
@@ -161,7 +162,7 @@ public class Primes {
 	 * @return True if number is prime, false otherwise.
 	 */
 	public boolean isPrime(int n) {
-		// Fill bitmap with all primes up to n
+		// Fill bitmap with all primes up to n (if needed)
 		while (currentPrime <= n) {
 			currentPrime += 2;
 			addNumber(currentPrime, calculatePrime(currentPrime));
@@ -171,10 +172,10 @@ public class Primes {
 		if (n == 2)     return true;
 		if (n % 2 == 0) return false;
 		// Find prime in bitmap
-		int oddIndex = (n - 3) / 2; // We want '3' to be the first bit
+		int oddIndex = (n - 3) / 2; // '3' is the first bit, ignore evens.
 		int row = oddIndex / 32;
 		int col = oddIndex % 32;
-		int i = 1 << col;
+		int i = 1 << col; // Create bitmask for current col index
 		return (oddBitmap[row] & i) > 0;
 	}
 
