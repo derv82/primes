@@ -26,7 +26,7 @@ public class Primes {
 	 * The most-recently-calculated prime (in sequence)
 	 * All numbers equal to or less than currentPrime are already in the bitmap.
 	 */
-	private int currentPrime = 1;
+	private long currentPrime = 1;
 	
 	/** 
 	 * Bitmap tracking which integers are prime.
@@ -49,19 +49,29 @@ public class Primes {
 	 * Initializes bitmap to contain all primes up to capcity.
 	 * @param capacity The highest prime to pre-calculate.
 	 */
-	public Primes(int capacity) {
+	public Primes(long capacity) {
 		// Initialize array to hold all the incoming bits.
 		// Code will resize the bitmap on the fly, but this prevents that slow-down.
-		oddBitmap = new int[((capacity - 3) / 64) + 1];
+		int bitmapSize = (int) ((capacity - 3) / 64) + 1;
+		System.out.println(bitmapSize);
+		oddBitmap = new int[bitmapSize];
 		// Generate bitmap for primes up (and possibly beyond) to the given number
 		isPrime(capacity);
 	}
+	/**
+	 * Initializes bitmap to contain all primes up to capacity.
+	 * @param capacity The highest prime to pre-calculate.
+	 */
+	public Primes(int capacity) { 
+		this( (long) capacity);
+	}
+
 	
 	/** 
 	 * Calculates the next prime in sequence and adds to bitmap.
 	 * @return The next prime in the sequence.
 	 */
-	public int nextPrime() {
+	public long nextPrime() {
 		// First prime must be 2. This requires some ugly hacking.
 		if (currentPrime < 2) {
 			currentPrime += 2;
@@ -79,10 +89,10 @@ public class Primes {
 	 * @param n The number to add.
 	 * @param prime True if n is prime, false otherwise.
 	 */
-	private void addNumber(int n, boolean prime) {
-		int oddIndex = (n - 3) / 2; // '3' is the first bit, ignore evens.
-		int row = oddIndex / 32;
-		int col = oddIndex % 32;
+	private void addNumber(long n, boolean prime) {
+		long oddIndex = ((n - 3) / 2); // '3' is the first bit, ignore evens.
+		int row = (int) (oddIndex / 32);
+		int col = (int) (oddIndex % 32);
 		if (row >= oddBitmap.length) {
 			// We need to increase the size of the bitmap
 			// Increase by 2x current size
@@ -103,14 +113,14 @@ public class Primes {
 	 * @param n The number to check if prime or not.
 	 * @return True if n is prime, false otherwise.
 	 */
-	private boolean calculatePrime(int n) {
+	private boolean calculatePrime(long n) {
 		// Ignore multiples of 2 (except 2).
 		if (n < 2)      return false;
 		if (n == 2)     return true;
 		if (n % 2 == 0) return false;
-		int maxFactor = (int) Math.sqrt(n); // Highest unique factor of n
+		long maxFactor = (long) Math.sqrt(n); // Highest unique factor of n
 		// Only check odd factors.
-		for (int i = 3; i <= maxFactor; i += 2) {
+		for (long i = 3; i <= maxFactor; i += 2) {
 			// If is a factor, then n is not prime.
 			if (n % i == 0) return false;
 		}
@@ -125,7 +135,8 @@ public class Primes {
 		2 ^ 15, 2 ^ 16, 2 ^ 17, 2 ^ 18, 2 ^ 19, 
 		2 ^ 20, 2 ^ 21, 2 ^ 22, 2 ^ 23, 2 ^ 24, 
 		2 ^ 25, 2 ^ 26, 2 ^ 27, 2 ^ 28, 2 ^ 29,
-		2 ^ 30, 2 ^ 31 };
+		2 ^ 30, 2 ^ 31
+	};
 	
 	/** 
 	 * Performs the O(n) computation to see if a number is prime.
@@ -138,8 +149,9 @@ public class Primes {
 		if (n < 2)      return false;
 		if (n == 2)     return true;
 		if (n % 2 == 0) return false;
-		int maxFactor = (int) Math.sqrt(n); // Highest possible factor of n.
-		int current = 1, currentRow = 0, currentCol = 0;
+		long maxFactor = (long) Math.sqrt(n); // Highest possible factor of n.
+		long current = 1;
+		int currentRow = 0, currentCol = 0;
 		while (current <= maxFactor) {
 			current += 2;
 			if (currentCol >= INT_SIZE) {
@@ -161,7 +173,7 @@ public class Primes {
 	 * @param n The number to check for primality.
 	 * @return True if number is prime, false otherwise.
 	 */
-	public boolean isPrime(int n) {
+	public boolean isPrime(long n) {
 		// Fill bitmap with all primes up to n (if needed)
 		while (currentPrime <= n) {
 			currentPrime += 2;
@@ -172,17 +184,26 @@ public class Primes {
 		if (n == 2)     return true;
 		if (n % 2 == 0) return false;
 		// Find prime in bitmap
-		int oddIndex = (n - 3) / 2; // '3' is the first bit, ignore evens.
-		int row = oddIndex / 32;
-		int col = oddIndex % 32;
+		long oddIndex = (n - 3) / 2; // '3' is the first bit, ignore evens.
+		int row = (int) (oddIndex / 32);
+		int col = (int) (oddIndex % 32);
 		int i = 1 << col; // Create bitmask for current col index
 		return (oddBitmap[row] & i) > 0;
+	}
+	/** 
+	 * Checks if n is a prime. 
+	 * Calculates all primes up to n if they haven't been calculated yet.
+	 * @param n The number to check for primality.
+	 * @return True if number is prime, false otherwise.
+	 */
+	public boolean isPrime(int n) {
+		return isPrime( (long) n );
 	}
 
 	/** Displays bitmap. */
 	public void printBitmap() {
 		// Highest row that may contain at least 1 bit.
-		int maxRow = (((currentPrime - 1) / 2) / 32);
+		long maxRow = (((currentPrime - 1) / 2) / 32);
 		System.out.print("Bitmap of odd primes (from 3 to " + (currentPrime - 2) + "):\n\t");
 		// Iterate over every row in bitmap (except non-calculated rows)
 		for (int row = 0; row < oddBitmap.length && row <= maxRow; row++) {
